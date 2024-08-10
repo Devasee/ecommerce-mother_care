@@ -1,31 +1,51 @@
-import express from 'express'
-import{isAdmin, requireSignIN} from '../middleware/authMiddleware.js'
-import { createProductController, deleteProductController, getProductController, getSingleProductController, productPhotoController, updateProductController } from '../controllers/productController.js'
-import formidable from 'express-formidable'
+import express from 'express';
+import { isAdmin, requireSignIN } from '../middleware/authMiddleware.js';
+import { braintreePaymentController, braintreeTokenController, createProductController, deleteProductController, getProductController, getSingleProductController, productCategoryController, productCountController, productFiltersController, productListController, productPhotoController, relatedProductController, searchProductController, updateProductController } from '../controllers/productController.js';
+import formidable from 'express-formidable';
 
-const router = express.Router()
-//routes
-router.post('/create-product', requireSignIN, isAdmin, formidable(), createProductController)
+const router = express.Router();
 
-//routes
-router.put(
-    "/update-product/:pid",
-    requireSignIN,
-    isAdmin,
-    formidable(),
-    updateProductController
-  );
+// Create Product
+router.post('/create-product', requireSignIN, isAdmin, formidable(), createProductController);
 
-//get products
-router.get("/get-product", getProductController);
+// Update Product
+router.put('/update-product/:pid', requireSignIN, isAdmin, formidable(), updateProductController);
 
-//single product
-router.get("/get-product/:slug", getSingleProductController);
+// Get All Products
+router.get('/get-product', getProductController);
 
-//get photo
-router.get("/product-photo/:pid", productPhotoController);
+// Get Single Product
+router.get('/get-product/:slug', getSingleProductController);
 
-//delete rproduct
-router.delete("/delete-product/:pid", deleteProductController);
+// Get Product Photo
+router.get('/product-photo/:pid', productPhotoController);
 
-export default router
+// Delete Product
+router.delete('/delete-product/:pid', requireSignIN, isAdmin, deleteProductController);
+
+//filter product
+router.post('/product-filters', productFiltersController);
+
+//product count
+router.get('/product-count', productCountController);
+
+//product per page
+router.get('/product-list/:page', productListController);
+
+//search for the product
+router.get('/search/:keyword', searchProductController)
+
+//similar product
+router.get('/related-product/:pid/:cid', relatedProductController);
+
+//category wise product
+router.get('/product-category/:slug', productCategoryController);
+
+//payments route
+//token
+router.get('/braintree/token', braintreeTokenController);
+
+//payments
+router.post('/braintree/payment', requireSignIN, braintreePaymentController);
+
+export default router;
